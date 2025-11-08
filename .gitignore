@@ -1,0 +1,6 @@
+venv/
+.env
+.qdrant/
+*.pdf
+__pycache__/
+*.pyc
