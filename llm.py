@@ -84,5 +84,5 @@ def router_prompt() -> ChatPromptTemplate:
 def synth_prompt() -> ChatPromptTemplate:
     return ChatPromptTemplate.from_messages([
         ("system", SYSTEM_SYNTH),
-        ("human", "Original answer:\n{answer}\n\nGreet them and Rewrite: keep facts, improve clarity, 1 short paragraph + bullets if appropriate.")
+        ("human", "Original answer:\n{answer}\n\n Rewrite: keep facts, improve clarity, 1 short paragraph + bullets if appropriate.")
     ])
