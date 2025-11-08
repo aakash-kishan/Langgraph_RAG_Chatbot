@@ -17,10 +17,7 @@ OWM_API_KEY = os.getenv("OWM_API_KEY")
 COLLECTION = os.getenv("COLLECTION", "pdf-knowledge")
 
 if "qdrant_client" not in st.session_state:
-    st.session_state["qdrant_client"] = get_qdrant_client(
-    url=os.getenv("QDRANT_URL"),
-    api_key=os.getenv("QDRANT_API_KEY")
-)
+    st.session_state["qdrant_client"] = get_qdrant_client()
 
 client = st.session_state["qdrant_client"]
 
