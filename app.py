@@ -9,7 +9,18 @@ from graph import build_graph
 
 load_dotenv()
 
-st.set_page_config(page_title="LangGraph Smart Query Agent", layout="wide",initial_sidebar_state="expanded")
+st.set_page_config(
+    page_title="LangGraph Smart Query Agent",
+    layout="wide",
+    initial_sidebar_state="expanded"
+)
+
+st.markdown("""
+    <style>
+        [data-testid="collapsedControl"] {display: none;}
+    </style>
+""", unsafe_allow_html=True)
+
 st.title("LangGraph Smart Query Agent")
 st.markdown("<h5 style='color: gray;'>Docs + Weather Smart Assistant</h5>", unsafe_allow_html=True)
 
@@ -19,70 +30,88 @@ COLLECTION = os.getenv("COLLECTION", "pdf-knowledge")
 
 if "qdrant_client" not in st.session_state:
     st.session_state["qdrant_client"] = get_qdrant_client()
+if "uploading" not in st.session_state:
+    st.session_state["uploading"] = False
+if "graph" not in st.session_state:
+    
+    class Dummy:
+        def invoke(self, _):
+            return []
+    st.session_state["graph"] = build_graph(Dummy(), weather_api_key=OWM_API_KEY)
 
 client = st.session_state["qdrant_client"]
 
-
-st.markdown("""
-    <style>
-        [data-testid="collapsedControl"] {display: none;}
-    </style>
-""", unsafe_allow_html=True)
-
 with st.sidebar:
-    st.subheader("PDF Uploading")
+    st.subheader("PDF Uploader")
     k = st.number_input("Top K", min_value=1, max_value=15, value=4)
-
     pdf_file = st.file_uploader("Upload a PDF", type=["pdf"])
+
     if st.button("Upload PDF"):
         if not GROQ_API_KEY:
             st.error("Missing GROQ_API_KEY in .env")
         elif not pdf_file:
             st.error("Upload a PDF first")
         else:
-            pdf_path = os.path.join(os.getcwd(), "upload.pdf")
-            with open(pdf_path, "wb") as f:
-                f.write(pdf_file.read())
+            st.session_state["uploading"] = True
+            st.rerun() 
 
-            docs = load_pdf(pdf_path)
-            chunks = ensure_chunks(docs)
-            texts = [d.page_content for d in chunks]
+if st.session_state["uploading"]:
+    st.info("⏳ Uploading and processing your PDF... Please wait.")
+    progress_text = st.empty()
+    progress_bar = st.progress(0)
 
-            embeddings = get_embeddings()
-            vs = build_vectorstore(client, COLLECTION, embeddings, texts)
+    pdf_path = os.path.join(os.getcwd(), "upload.pdf")
 
-            
-            st.session_state["retriever"] = vs.as_retriever(search_kwargs={"k": int(k)})
-            st.session_state["vs"] = vs
-            st.success(f"Indexed {len(texts)} chunks into '{COLLECTION}' ✅")
-            st.session_state["graph"] = build_graph(st.session_state["retriever"], weather_api_key=OWM_API_KEY)
+    with st.spinner("Processing your PDF..."):
+        progress_text.text("Saving file...")
+        with open(pdf_path, "wb") as f:
+            f.write(pdf_file.read())
+        progress_bar.progress(20)
 
+        progress_text.text("Loading and chunking PDF...")
+        docs = load_pdf(pdf_path)
+        chunks = ensure_chunks(docs)
+        texts = [d.page_content for d in chunks]
+        progress_bar.progress(50)
 
-if "graph" not in st.session_state:
-    retriever = st.session_state.get("retriever")
-    if not retriever:
-        class Dummy:
-            def invoke(self, _):
-                return []
+        progress_text.text("Creating embeddings and vector store...")
+        embeddings = get_embeddings()
+        vs = build_vectorstore(client, COLLECTION, embeddings, texts)
+        progress_bar.progress(80)
 
-        retriever = Dummy()
-    st.session_state["graph"] = build_graph(retriever, weather_api_key=OWM_API_KEY)
+        progress_text.text("Building LangGraph...")
+        st.session_state["retriever"] = vs.as_retriever(search_kwargs={"k": int(k)})
+        st.session_state["vs"] = vs
+        st.session_state["graph"] = build_graph(
+            st.session_state["retriever"],
+            weather_api_key=OWM_API_KEY
+        )
+        progress_bar.progress(100)
+
+    st.success(f"Indexed {len(texts)} chunks into '{COLLECTION}' ✅")
+    progress_text.empty()
+    progress_bar.empty()
+
+    st.session_state["uploading"] = False
+    st.rerun()  
 
 st.chat_message("assistant").write(
-    "Upload a PDF → then ask about it or Try: **What's the weather in Bengaluru today? "
+    "Upload a PDF → then ask about it. Or try: **What's the weather in Bengaluru today?** 🌦️"
 )
 
-user_query = st.chat_input("Ask something...")
+if not st.session_state["uploading"]:
+    user_query = st.chat_input("Ask something...")
+else:
+    user_query = None 
 
 if user_query:
     graph = st.session_state["graph"]
-
     retriever = st.session_state.get("retriever")
+
     if not retriever:
         class Dummy:
             def invoke(self, _):
                 return []
-
         retriever = Dummy()
 
     with st.spinner("Thinking..."):
@@ -92,4 +121,4 @@ if user_query:
         })
 
         st.chat_message("user").write(user_query)
-        st.chat_message("assistant").write(res.get("answer","(no answer)"))
+        st.chat_message("assistant").write(res.get("answer", "(no answer)"))
