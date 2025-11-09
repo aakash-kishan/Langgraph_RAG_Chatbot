@@ -9,7 +9,10 @@ def route_llm(question: str) -> RouteDecision:
     q = question.lower()
 
     # weather keywords
-    weather_words = ["weather", "temperature", "rain", "humidity", "forecast", "climate"]
+    weather_words =  [
+ "weather", "temperature", "rain", "forecast", "climate",
+ "hot", "cold", "humid", "humidity", "heat", "sunny"
+]
 
     if any(w in q for w in weather_words):
         # try to extract city
