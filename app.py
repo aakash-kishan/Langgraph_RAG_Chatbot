@@ -9,7 +9,6 @@ from graph import build_graph
 
 load_dotenv()
 
-# --- Streamlit page setup ---
 st.set_page_config(
     page_title="LangGraph Smart Query Agent",
     layout="wide",
@@ -25,7 +24,6 @@ st.markdown("""
 st.title("LangGraph Smart Query Agent")
 st.markdown("<h5 style='color: gray;'>Docs + Weather Smart Assistant</h5>", unsafe_allow_html=True)
 
-# --- Environment and session setup ---
 GROQ_API_KEY = os.getenv("GROQ_API_KEY")
 OWM_API_KEY = os.getenv("OWM_API_KEY")
 COLLECTION = os.getenv("COLLECTION", "pdf-knowledge")
@@ -42,7 +40,6 @@ if "graph" not in st.session_state:
 
 client = st.session_state["qdrant_client"]
 
-# --- Sidebar: PDF uploader ---
 with st.sidebar:
     st.subheader("📄 PDF Uploader")
     k = st.number_input("Top K", min_value=1, max_value=15, value=4)
@@ -58,7 +55,6 @@ with st.sidebar:
             st.session_state["upload_success"] = False
             st.rerun()
 
-# --- Upload and processing section ---
 if st.session_state["uploading"]:
     st.info("⏳ Uploading and processing your PDF... Please wait.")
     progress_text = st.empty()
