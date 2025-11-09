@@ -9,8 +9,9 @@ from graph import build_graph
 
 load_dotenv()
 
-st.set_page_config(page_title="LangGraph RAG + Weather (Groq)", page_icon="☁️", layout="wide")
-st.title("LangGraph RAG + Weather")
+st.set_page_config(page_title="LangGraph Smart Query Agent", layout="wide",initial_sidebar_state="expanded")
+st.title("LangGraph Smart Query Agent")
+st.markdown("<h5 style='color: gray;'>Docs + Weather Smart Assistant</h5>", unsafe_allow_html=True)
 
 GROQ_API_KEY = os.getenv("GROQ_API_KEY")
 OWM_API_KEY = os.getenv("OWM_API_KEY")
@@ -21,12 +22,19 @@ if "qdrant_client" not in st.session_state:
 
 client = st.session_state["qdrant_client"]
 
+
+st.markdown("""
+    <style>
+        [data-testid="collapsedControl"] {display: none;}
+    </style>
+""", unsafe_allow_html=True)
+
 with st.sidebar:
-    st.subheader("PDF Indexing")
+    st.subheader("PDF Uploading")
     k = st.number_input("Top K", min_value=1, max_value=15, value=4)
 
     pdf_file = st.file_uploader("Upload a PDF", type=["pdf"])
-    if st.button("Index PDF"):
+    if st.button("Upload PDF"):
         if not GROQ_API_KEY:
             st.error("Missing GROQ_API_KEY in .env")
         elif not pdf_file:
@@ -61,7 +69,7 @@ if "graph" not in st.session_state:
     st.session_state["graph"] = build_graph(retriever, weather_api_key=OWM_API_KEY)
 
 st.chat_message("assistant").write(
-    "Upload a PDF → then ask about it. Try: **What's the weather in Bengaluru today?** 🌦️"
+    "Upload a PDF → then ask about it or Try: **What's the weather in Bengaluru today? "
 )
 
 user_query = st.chat_input("Ask something...")
