@@ -6,7 +6,6 @@ from functools import partial
 from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain_core.prompts import ChatPromptTemplate
 
-# system messages
 SYSTEM_RAG = (
     "You are a helpful assistant that answers strictly based on the provided context. "
     "If the answer is not in the context, say you don't know."
@@ -26,14 +25,11 @@ def call_groq(prompt: str, temperature: float = 0.2) -> str:
 
         q = prompt.lower()
 
-        # if question clearly weather related
         if any(w in q for w in ["weather", "temperature", "forecast", "rain", "humidity"]):
             return '{"mode":"weather","city":"mumbai"}'
 
-        # else → always rag
         return '{"mode":"rag","city":null}'
 
-    # real call when running APP
     client = Groq(api_key=api)
     completion = client.chat.completions.create(
         model="llama-3.3-70b-versatile",

@@ -36,7 +36,6 @@ def build_graph(rag_retriever, weather_api_key: str):
     def node_rag(state):
         q = state["question"].lower()
 
-        # small friendly greetings handler
         if q in ["hi", "hello", "hey", "hii", "hai", "hiii"]:
             return {"answer": "Hi 👋! Upload a PDF and ask me anything about it OR ask me weather questions!"}
 
