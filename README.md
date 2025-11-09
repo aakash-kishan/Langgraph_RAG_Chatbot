@@ -143,3 +143,79 @@ What’s covered:
 
 - Synthesis polishes the final answer (short, clear, actionable).
 
+
+## 🖼️ Screenshots 
+
+1. Home UI (no PDF)
+     <p align="center">
+    <img src="assets/1.png" width="800" />
+    </p>
+
+
+
+2. Weather answer
+    <p align="center">
+    <img src="assets/weather.png" width="800" />
+    </p>
+
+3. Langsmith tracing of the above weather query
+   <p align="center">
+  <img src="assets/langsmith-weather-1.png" width="800" />
+  </p>
+  <p align="center">
+    <img src="assets/langsmith-weather-2.png" width="800" />
+  </p>
+  <p align="center">
+     <img src="assets/langsmith-weather-3.png" width="800" />
+  </p>
+  <p align="center">
+     <img src="assets/langsmith-weather-4.png" width="800" />
+  </p>
+  <p align="center">
+     <img src="assets/langsmith-weather-5.png" width="800" />
+  </p>
+
+4. Document Loading
+  <p align="center">
+     <img src="assets/rag-1.png" width="800" />
+  </p>
+5. PDF Uploaded
+   <p align="center">
+     <img src="assets/rag-2.png" width="800" />
+  </p>
+6. User query and answer
+   <p align="center">
+     <img src="assets/rag-3.png" width="800" />
+  </p>
+
+7. Langsmith tracing of the above weather query of above rag query
+   <p align="center">
+     <img src="assets/rag-langsmith-1.png" width="800" />
+   </p>
+
+   <p align="center">
+     <img src="assets/rag-langsmith-2.png" width="800" />
+   </p>
+
+   <p align="center">
+     <img src="assets/rag-langsmith-3.png" width="800" />
+   </p>
+
+   <p align="center">
+     <img src="assets/rag-langsmith-4.png" width="800" />
+   </p>
+
+<br>
+  
+    I have uploaded the same file 4 times.
+
+   <p align="center">
+     <img src="assets/rag-langsmith-5.png" width="800" />
+   </p>
+
+   <p align="center">
+     <img src="assets/rag-langsmith-6.png" width="800" />
+   </p>
+
+   
+  
