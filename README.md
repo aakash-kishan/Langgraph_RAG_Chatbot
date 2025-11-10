@@ -213,9 +213,49 @@ What’s covered:
      <img src="assets/rag-langsmith-5.png" width="800" />
    </p>
 
+
+   
+
    <p align="center">
      <img src="assets/rag-langsmith-6.png" width="800" />
    </p>
 
+
+## ⚙️ Configuration & Defaults
+
+  
+- Groq model: llama-3.3-70b-versatile (change in llm.py via get_chat_model()).
+ 
+- Embeddings: all-MiniLM-L6-v2 (384-dim).
+
+- Chunking: 1000 chars / 150 overlap (see vectorstore.py).
+
+- Collection name: pdf-knowledge (override with COLLECTION env).
+
+- Top-K: adjustable in settings (sidebar or modal depending on your UI).
+
+
+## 🩹 Troubleshooting
+
+- Collection doesn’t exist (Qdrant 404)
+  You tried to upsert before creating a Qdrant vectorstore. In this repo, we call Qdrant(...).add_texts() which creates the collection implicitly. Ensure your QDRANT_URL & QDRANT_API_KEY are correct.
+
+- Storage folder .qdrant is already accessed
+  This occurs when using local embedded Qdrant and starting multiple instances. For Cloud, always use Qdrant Cloud.
+
+- ModuleNotFoundError: qdrant_client
+  Run pip install -r requirements.txt in the right virtual environment.
+
+- Router misclassifies RAG vs Weather
+  Router uses strict JSON + heuristics. You can tune nodes/router.py to bias to RAG for certain keywords (“vector”, “pdf”, “document”, “rag”, etc).
+
+- Streamlit Cloud fails
+  Make sure:
+
+  No heavyweight libs (like torch) in requirements.txt
+
+  Use TOML Secrets (see above)
+
+   Qdrant Cloud CORS allows your app domain
    
   
